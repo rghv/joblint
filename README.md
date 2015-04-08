@@ -6,7 +6,7 @@ Test tech job specs for issues with sexism, culture, expectations, and recruiter
 **Writing a job spec?** Use Joblint to make your job attractive to a much broader range of candidates.  
 **Getting swamped in job specs?** Use Joblint to filter out the bad ones.
 
-**Current Version:** *1.0.0*  
+**Current Version:** *1.3.2*  
 **Build Status:** [![Build Status][travis-img]][travis]  
 **Node Support:** *0.10*  
 
@@ -24,7 +24,7 @@ Installing
 Joblint runs on [Node.js][node], and is installed with npm:
 
 ```sh
-$ npm install joblint
+$ npm install joblint -g
 ```
 
 
@@ -43,6 +43,7 @@ $ joblint --help
     -h, --help             output usage information
     -V, --version          output the version number
     -r, --reporter [type]  Use the specified reporter [cli]
+    -v, --verbose          Output verbose rule descriptions (if the reporter supports them)
 
 ```
 
@@ -104,7 +105,7 @@ Please ensure there are no lint errors or failing tests before opening a pull re
 Thanks
 ------
 
-The following excellent people helped massively with defining the lint rules:
+The following excellent people helped massively with defining the original lint rules:
 
 - [Ben Darlow](http://www.kapowaz.net/)
 - [Perry Harlock](http://www.phwebs.co.uk/)
@@ -114,6 +115,8 @@ The following excellent people helped massively with defining the lint rules:
 - [Luke Stavenhagen](https://twitter.com/stavi)
 - [Andrew Walker](https://twitter.com/moddular)
 
+Also, there are plenty of [great contributors][contrib] to the library.
+
 
 License
 -------
@@ -122,6 +125,7 @@ Joblint is licensed under the [MIT][mit] license.
 
 
 
+[contrib]: https://github.com/rowanmanning/joblint/graphs/contributors
 [mit]: http://opensource.org/licenses/mit-license.php
 [node]: http://nodejs.org/
 [travis]: https://travis-ci.org/rowanmanning/joblint

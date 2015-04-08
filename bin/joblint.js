@@ -13,39 +13,52 @@ function initProgram () {
     program
         .version(pkg.version)
         .usage('[options] <file>')
-        .option('-r, --reporter [type]', 'Use the specified reporter [cli]', 'cli')
+        .option(
+            '-r, --reporter [type]',
+            'Use the specified reporter [cli]',
+            'cli'
+        )
+        .option(
+            '-v, --verbose',
+            'Output verbose rule descriptions (if the reporter supports them)',
+            false
+        )
         .parse(process.argv);
     loadReporter(program.reporter);
     runCommand();
 }
 
 function loadReporter (reporter) {
-    loadLocalReporter(reporter);
-    if (!report) {
-        loadModuleReporter(reporter);
-    }
+    report = getReporter(reporter);
     if (!report) {
         handleInputFailure('Reporter "' + reporter + '" was not found');
     }
 }
 
-function loadLocalReporter (reporter) {
+function getReporter (reporter) {
+    var path = getLocalReporterPath(reporter) || getModuleReporterPath(reporter);
+    if (path) {
+        return require(path);
+    }
+}
+
+function getLocalReporterPath (reporter) {
     try {
-        report = require('../lib/report/' + reporter);
+        return require.resolve('../lib/report/' + reporter);
     }
     catch (err) {}
 }
 
-function loadModuleReporter (reporter) {
+function getModuleReporterPath (reporter) {
     try {
-        report = require(reporter);
+        return require.resolve(reporter);
     }
     catch (err) {}
 }
 
 function runCommand () {
     if (program.args.length) {
-        runCommandOnFile(process.argv[2]);
+        runCommandOnFile(program.args[0]);
     } else {
         runCommandOnStdIn();
     }
@@ -62,7 +75,11 @@ function runCommandOnFile (fileName) {
 }
 
 function runCommandOnStdIn () {
-    captureStdIn(handleInputSuccess);
+    if (isTty(process.stdin)) {
+        program.help();
+    } else {
+        captureStdIn(handleInputSuccess);
+    }
 }
 
 function handleInputFailure (msg) {
@@ -72,7 +89,9 @@ function handleInputFailure (msg) {
 
 function handleInputSuccess (data) {
     var result = joblint(data);
-    report(result);
+    report(result, {
+        verbose: program.verbose
+    });
 }
 
 function captureStdIn (done) {
@@ -84,4 +103,8 @@ function captureStdIn (done) {
     process.stdin.on('end', function () {
         done(data);
     });
+}
+
+function isTty (stream) {
+    return true === stream.isTTY;
 }

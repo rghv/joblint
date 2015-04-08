@@ -49,6 +49,14 @@ describe('result', function () {
                 assert.strictEqual(result.failPoints.tech, 0);
             });
 
+            it('should have a setCurrentRule method', function () {
+                assert.isFunction(result.setCurrentRule);
+            });
+
+            it('should have a clearCurrentRule method', function () {
+                assert.isFunction(result.clearCurrentRule);
+            });
+
             it('should have an addError method', function () {
                 assert.isFunction(result.addError);
             });
@@ -89,17 +97,51 @@ describe('result', function () {
                 assert.isFunction(result.isClean);
             });
 
+            describe('.setCurrentRule()', function () {
+                var rule;
+
+                beforeEach(function () {
+                    rule = {};
+                    result.setCurrentRule(rule);
+                });
+
+                it('should set the currentRule property', function () {
+                    assert.strictEqual(result.currentRule, rule);
+                });
+
+            });
+
+            describe('.clearCurrentRule()', function () {
+
+                beforeEach(function () {
+                    result.setCurrentRule({});
+                    result.clearCurrentRule();
+                });
+
+                it('should delete the currentRule property', function () {
+                    assert.isUndefined(result.currentRule);
+                });
+
+            });
+
             describe('.addError()', function () {
 
                 beforeEach(function () {
+                    result.setCurrentRule({desc: 'hello'});
                     result.addError('foo');
                     result.addError('bar');
+                    result.addError('baz', [1, 2, 3]);
+                    result.clearCurrentRule();
                 });
 
                 it('should add the passed in messages to the errors property', function () {
-                    assert.lengthEquals(result.errors, 2);
-                    assert.strictEqual(result.errors[0], 'foo');
-                    assert.strictEqual(result.errors[1], 'bar');
+                    assert.lengthEquals(result.errors, 3);
+                    assert.deepEqual(result.errors[0], {message: 'foo', detail: 'hello', evidence: []});
+                    assert.deepEqual(result.errors[1], {message: 'bar', detail: 'hello', evidence: []});
+                });
+
+                it('should store evidence if given', function () {
+                    assert.deepEqual(result.errors[2], {message: 'baz', detail: 'hello', evidence: [1, 2, 3]});
                 });
 
             });
@@ -107,14 +149,21 @@ describe('result', function () {
             describe('.addWarning()', function () {
 
                 beforeEach(function () {
+                    result.setCurrentRule({desc: 'hello'});
                     result.addWarning('foo');
                     result.addWarning('bar');
+                    result.addWarning('baz', [1, 2, 3]);
+                    result.clearCurrentRule();
                 });
 
                 it('should add the passed in messages to the warnings property', function () {
-                    assert.lengthEquals(result.warnings, 2);
-                    assert.strictEqual(result.warnings[0], 'foo');
-                    assert.strictEqual(result.warnings[1], 'bar');
+                    assert.lengthEquals(result.warnings, 3);
+                    assert.deepEqual(result.warnings[0], {message: 'foo', detail: 'hello', evidence: []});
+                    assert.deepEqual(result.warnings[1], {message: 'bar', detail: 'hello', evidence: []});
+                });
+
+                it('should store evidence if given', function () {
+                    assert.deepEqual(result.warnings[2], {message: 'baz', detail: 'hello', evidence: [1, 2, 3]});
                 });
 
             });
@@ -122,14 +171,21 @@ describe('result', function () {
             describe('.addNotice()', function () {
 
                 beforeEach(function () {
+                    result.setCurrentRule({desc: 'hello'});
                     result.addNotice('foo');
                     result.addNotice('bar');
+                    result.addNotice('baz', [1, 2, 3]);
+                    result.clearCurrentRule();
                 });
 
                 it('should add the passed in messages to the notices property', function () {
-                    assert.lengthEquals(result.notices, 2);
-                    assert.strictEqual(result.notices[0], 'foo');
-                    assert.strictEqual(result.notices[1], 'bar');
+                    assert.lengthEquals(result.notices, 3);
+                    assert.deepEqual(result.notices[0], {message: 'foo', detail: 'hello', evidence: []});
+                    assert.deepEqual(result.notices[1], {message: 'bar', detail: 'hello', evidence: []});
+                });
+
+                it('should store evidence if given', function () {
+                    assert.deepEqual(result.notices[2], {message: 'baz', detail: 'hello', evidence: [1, 2, 3]});
                 });
 
             });

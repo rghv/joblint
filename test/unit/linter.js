@@ -1,3 +1,4 @@
+/* jshint maxstatements: false, maxlen: false */
 /* global afterEach, beforeEach, describe, it */
 'use strict';
 
@@ -79,8 +80,8 @@ describe('linter', function () {
                 var result, rule1, rule2, spec;
 
                 beforeEach(function () {
-                    rule1 = sinon.spy();
-                    rule2 = sinon.spy();
+                    rule1 = {test: sinon.spy()};
+                    rule2 = {test: sinon.spy()};
                     linter.rules = [rule1, rule2];
                     linter.lint('foo');
                     result = createResult.firstCall.returnValue;
@@ -95,9 +96,18 @@ describe('linter', function () {
                     assert.strictEqual(createSpec.withArgs('foo').callCount, 1);
                 });
 
+                it('should set the result\'s current rule for each rule', function () {
+                    assert.strictEqual(result.setCurrentRule.withArgs(rule1).callCount, 1);
+                    assert.strictEqual(result.setCurrentRule.withArgs(rule2).callCount, 1);
+                });
+
                 it('should call each rule with the spec and the result', function () {
-                    assert.strictEqual(rule1.withArgs(spec, result).callCount, 1);
-                    assert.strictEqual(rule2.withArgs(spec, result).callCount, 1);
+                    assert.strictEqual(rule1.test.withArgs(spec, result).callCount, 1);
+                    assert.strictEqual(rule2.test.withArgs(spec, result).callCount, 1);
+                });
+
+                it('should clear the result\'s current rule', function () {
+                    assert.strictEqual(result.clearCurrentRule.callCount, 1);
                 });
 
             });
